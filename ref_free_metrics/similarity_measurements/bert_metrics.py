@@ -79,7 +79,7 @@ def run_bert_vec_metrics(year, ref_metric, sim_metric, gpu=True):
         if 'nli' in sim_metric:
             berttokenizer = RobertaTokenizer.from_pretrained(roberta_large_mnli_path) # 'roberta-large-mnli'
             bertmodel = RobertaModel.from_pretrained(roberta_large_mnli_path) # 'roberta-large-mnli'
-        if 'openai' in sim_metric:
+        elif 'openai' in sim_metric:
             berttokenizer = RobertaTokenizer.from_pretrained(roberta_large_openai_detector_path) # 'roberta-large-openai-detector'
             bertmodel = RobertaModel.from_pretrained(roberta_large_openai_detector_path) # 'roberta-large-openai-detector'
         else:

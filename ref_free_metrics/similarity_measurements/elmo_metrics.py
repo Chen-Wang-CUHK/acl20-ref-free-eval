@@ -29,7 +29,7 @@ options_file = os.path.join(BASE_DIR, 'data', 'elmo_config_files', 'elmo_2x4096_
 weight_file = os.path.join(BASE_DIR, 'data', 'elmo_config_files', 'elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5')
 
 
-def get_elmo_vec_similarity(elmo_model, all_sents, ref_num):
+def get_elmo_vec_similarity(elmo_model, all_sents, ref_num, device='cpu'):
     vec_matrix = []
     non_idx = []
     for i,doc in enumerate(all_sents):
@@ -39,7 +39,7 @@ def get_elmo_vec_similarity(elmo_model, all_sents, ref_num):
             vec_matrix.append([0.]*1024)
             continue
         sent_length = [len(ts) for ts in tokenized_sents]
-        character_ids = batch_to_ids(tokenized_sents).to('cuda')
+        character_ids = batch_to_ids(tokenized_sents).to(device)
         elmo_vecs = elmo_model(character_ids)['elmo_representations']
         token_vecs = None
         for j in range(len(sent_length)):
@@ -53,7 +53,7 @@ def get_elmo_vec_similarity(elmo_model, all_sents, ref_num):
     return [ss if j+ref_num not in non_idx else None for j,ss in enumerate(scores)]
 
 
-def run_elmo_vec_metrics(year, ref_metric):
+def run_elmo_vec_metrics(year, ref_metric, device='cpu'):
     print('year: {}, ref_metric: {}, sim_metric: elmo'.format(year,ref_metric))
 
     corpus_reader = CorpusReader(BASE_DIR)
@@ -62,7 +62,7 @@ def run_elmo_vec_metrics(year, ref_metric):
     human = tacData.getHumanScores('summary', 'pyramid') # responsiveness or pyramid
     # changed by wchen, download and use the local options_file and weight_file
     elmo_model = Elmo(options_file, weight_file, 2, dropout=0)
-    elmo_model.to('cuda')
+    elmo_model.to(device) # chenged by wchen
     bert_model = SentenceTransformer(bert_large_nli_mean_tokens_path)#'bert-large-nli-stsb-mean-tokens')
 
     mystopwords = set(stopwords.words(LANGUAGE))
@@ -94,7 +94,8 @@ def run_elmo_vec_metrics(year, ref_metric):
         # compute word-vec-cosine score
         pss = get_elmo_vec_similarity(elmo_model,all_sents,len(ref_sources))
         # compute correlation
-        hss = [get_human_score(topic,ss[0].split('/')[-1],human) for ss in peer_summaries[topic]]
+        # (topic, ss[0].split('/')[-1]), human)
+        hss = [get_human_score(topic, os.path.basename(ss[0]), human) for ss in peer_summaries[topic]]
         pseudo_scores, human_scores = [], []
         for i in range(len(pss)):
             if hss[i] is not None and pss[i] is not None:
