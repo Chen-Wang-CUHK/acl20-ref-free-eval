@@ -44,12 +44,17 @@ def evaluateReward(learnt_scores, human_scores):
     """
     results = {}
     # compute the Pearson's correlation coefficients
-    pearson_r, _ = pearsonr(learnt_scores, human_scores)
+    pearson_r, p_r = pearsonr(learnt_scores, human_scores)
     results['pearson_r'] = pearson_r
+    results['p_pearson_r'] = p_r
+
     # compute the Spearman's correlation coefficients
-    spearman_rho, _ = spearmanr(learnt_scores, human_scores)
+    spearman_rho, p_rho = spearmanr(learnt_scores, human_scores)
     results['spearman_rho'] = spearman_rho
+    results['p_spearman_rho'] = p_rho
+
     # compute the Kendall's correlation coefficients
-    kendall_tau, _ = kendalltau(learnt_scores, human_scores)
+    kendall_tau, p_tau = kendalltau(learnt_scores, human_scores)
     results['kendall_tau'] = kendall_tau
+    results['p_kendall_tau'] = p_tau
     return results
