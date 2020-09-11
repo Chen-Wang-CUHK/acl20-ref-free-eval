@@ -1,4 +1,5 @@
 import sys
+import os
 sys.path.append('../')
 from nltk.stem.porter import PorterStemmer
 from collections import OrderedDict
@@ -86,7 +87,9 @@ def get_js_scores(year,ngram_list,wanted):
 
         summaries = peer_summaries[topic]
         for ss in summaries:
-            sname = ss[0].split('/')[-1]
+            # changed by wchen to adopt to both Linux and Windows machine
+            # sname = ss[0].split('/')[-1]
+            sname = os.path.basename(ss[0])
             if len(ss[1]) == 0: continue
             summary = ss[1]
             jsv = js_agent(summary)
@@ -104,7 +107,8 @@ def get_human_score(topic, summ_name, human):
 
 
 if __name__ == '__main__':
-    year = '08'
+    # '08', '09', '2010', '2011'
+    year = '2010'
     human_metric = 'pyramid'
     ngram_list = [1]
     wanted = 'js'

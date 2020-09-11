@@ -1,4 +1,5 @@
 import sys
+import os
 sys.path.append('../..')
 
 from sentence_transformers import SentenceTransformer
@@ -19,6 +20,10 @@ from utils import get_human_score
 from summariser.data_processor.human_score_reader import TacData
 from summariser.utils.evaluator import evaluateReward, addResult
 from summariser.utils.data_helpers import sent2stokens_wostop, sent2tokens_wostop
+
+from resources import bert_large_nli_mean_tokens_path, bert_large_uncased_path
+from resources import bert_large_nli_stsb_mean_tokens_path, albert_large_v2_path
+from resources import roberta_large_path, roberta_large_mnli_path, roberta_large_openai_detector_path
 
 
 def get_token_vecs(model, tokenizer, sent_list, gpu, sim_metric):
@@ -61,25 +66,25 @@ def run_bert_vec_metrics(year, ref_metric, sim_metric, gpu=True):
     peer_summaries = PeerSummaryReader(BASE_DIR)(year)
     tacData = TacData(BASE_DIR,year)
     human = tacData.getHumanScores('summary', 'pyramid') # responsiveness or pyramid
-    sbert_model = SentenceTransformer('bert-large-nli-mean-tokens')#'bert-large-nli-stsb-mean-tokens')
+    sbert_model = SentenceTransformer(bert_large_nli_mean_tokens_path)# 'bert-large-nli-mean-tokens' 'bert-large-nli-stsb-mean-tokens')
 
     if sim_metric == 'bert':
-        berttokenizer = BertTokenizer.from_pretrained('bert-large-uncased')
-        bertmodel = BertModel.from_pretrained('bert-large-uncased')
+        berttokenizer = BertTokenizer.from_pretrained(bert_large_uncased_path) # 'bert-large-uncased'
+        bertmodel = BertModel.from_pretrained(bert_large_uncased_path) # 'bert-large-uncased'
     elif sim_metric == 'albert':
-        berttokenizer = AlbertTokenizer.from_pretrained('albert-large-v2')
-        bertmodel = AlbertModel.from_pretrained('albert-large-v2')
+        berttokenizer = AlbertTokenizer.from_pretrained(albert_large_v2_path) # 'albert-large-v2'
+        bertmodel = AlbertModel.from_pretrained(albert_large_v2_path) # 'albert-large-v2'
     else:
         assert 'roberta' in sim_metric
         if 'nli' in sim_metric:
-            berttokenizer = RobertaTokenizer.from_pretrained('roberta-large-mnli')
-            bertmodel = RobertaModel.from_pretrained('roberta-large-mnli')
+            berttokenizer = RobertaTokenizer.from_pretrained(roberta_large_mnli_path) # 'roberta-large-mnli'
+            bertmodel = RobertaModel.from_pretrained(roberta_large_mnli_path) # 'roberta-large-mnli'
         if 'openai' in sim_metric:
-            berttokenizer = RobertaTokenizer.from_pretrained('roberta-large-openai-detector')
-            bertmodel = RobertaModel.from_pretrained('roberta-large-openai-detector')
+            berttokenizer = RobertaTokenizer.from_pretrained(roberta_large_openai_detector_path) # 'roberta-large-openai-detector'
+            bertmodel = RobertaModel.from_pretrained(roberta_large_openai_detector_path) # 'roberta-large-openai-detector'
         else:
-            berttokenizer = RobertaTokenizer.from_pretrained('roberta-large')
-            bertmodel = RobertaModel.from_pretrained('roberta-large')
+            berttokenizer = RobertaTokenizer.from_pretrained(roberta_large_path) # 'roberta-large'
+            bertmodel = RobertaModel.from_pretrained(roberta_large_path) # 'roberta-large'
     if gpu: bertmodel.to('cuda')
 
     mystopwords = set(stopwords.words(LANGUAGE))
@@ -111,7 +116,9 @@ def run_bert_vec_metrics(year, ref_metric, sim_metric, gpu=True):
         # compute word-vec-cosine score
         pss = get_bert_vec_similarity(bertmodel,berttokenizer,all_sents,len(ref_sources),gpu,sim_metric)
         # compute correlation
-        hss = [get_human_score(topic,ss[0].split('/')[-1],human) for ss in peer_summaries[topic]]
+        # changed by wchen to adopt to both Linux and Windows machine
+        # (topic, ss[0].split('/')[-1]), human)
+        hss = [get_human_score(topic, os.path.basename(ss[0]), human) for ss in peer_summaries[topic]]
         pseudo_scores, human_scores = [], []
         for i in range(len(pss)):
             if hss[i] is not None and pss[i] is not None:
@@ -131,7 +138,8 @@ def run_bert_vec_metrics(year, ref_metric, sim_metric, gpu=True):
         print('{}:\tmax {:.4f}, min {:.4f}, mean {:.4f}, median {:.4f}, significant {} out of {}'.format(kk, np.max(all_results[kk]), np.min(all_results[kk]), np.mean(all_results[kk]), np.median(all_results[kk]), len([p for p in all_results['p_{}'.format(kk)] if p<0.05]), len(all_results[kk])))
 
 
-
 if __name__ == '__main__':
-    run_bert_vec_metrics(year='08', ref_metric='top12_1', sim_metric='bert')
+    # '08', '09', '2010', '2011'
+    year = '2010'
+    run_bert_vec_metrics(year=year, ref_metric='top12_1', sim_metric='bert', gpu=False)
 

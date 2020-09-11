@@ -1,4 +1,5 @@
 import sys
+import os
 sys.path.append('../')
 from nltk.stem.porter import PorterStemmer
 from nltk.corpus import stopwords
@@ -41,7 +42,9 @@ def get_tfidf_scores(year,ref_summ):
 
         summaries = peer_summaries[topic]
         for ss in summaries:
-            sname = ss[0].split('/')[-1]
+            # changed by wchen to adopt to both Linux and Windows machine
+            # sname = ss[0].split('/')[-1]
+            sname = os.path.basename(ss[0])
             if len(ss[1]) == 0: continue
             swos_summ = ' '.join(sent2stokens_wostop(' '.join(ss[1]),stemmer,mystopwords,LANGUAGE))
             all_swos.append(swos_summ)
@@ -70,7 +73,8 @@ def get_human_score(topic, summ_name, human):
 
 
 if __name__ == '__main__':
-    year = '08'
+    # '08', '09', '2010', '2011'
+    year = '2010'
     human_metric = 'pyramid'
     ref_summ = False
 

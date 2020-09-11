@@ -8,8 +8,13 @@ class PeerSummaryReader:
         self.base_path = base_path
 
     def __call__(self,year):
-        assert '08' == year or '09' == year
-        data_path = os.path.join(self.base_path,'data','human_evaluations','UpdateSumm{}_eval'.format(year),'ROUGE','peers')
+        # changed by wchen
+        assert '08' == year or '09' == year or '2010' == year or '2011' == year
+        if year in ['08', '09']:
+            data_path = os.path.join(self.base_path,'data','human_evaluations','UpdateSumm{}_eval'.format(year), 'ROUGE','peers')
+        else:
+            # year in [2010, 2011]
+            data_path = os.path.join(self.base_path, 'data', 'human_evaluations', 'GuidedSumm{}_eval'.format(year), 'ROUGE', 'peers')
         summ_dic = self.readPeerSummary(data_path)
 
         return summ_dic

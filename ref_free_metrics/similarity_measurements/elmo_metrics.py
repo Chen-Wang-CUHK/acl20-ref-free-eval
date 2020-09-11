@@ -1,4 +1,5 @@
 import sys
+import os
 sys.path.append('../..')
 
 from sentence_transformers import SentenceTransformer
@@ -19,9 +20,13 @@ from summariser.data_processor.human_score_reader import TacData
 from summariser.utils.evaluator import evaluateReward, addResult
 from summariser.utils.data_helpers import sent2stokens_wostop, sent2tokens_wostop
 
+# changed by wchen to use the downloaded local files
+# options_file = "https://allennlp.s3.amazonaws.com/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_options.json"
+# weight_file = "https://allennlp.s3.amazonaws.com/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5"
 
-options_file = "https://allennlp.s3.amazonaws.com/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_options.json"
-weight_file = "https://allennlp.s3.amazonaws.com/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5"
+from resources import bert_large_nli_mean_tokens_path
+options_file = os.path.join(BASE_DIR, 'data', 'elmo_config_files', 'elmo_2x4096_512_2048cnn_2xhighway_options.json')
+weight_file = os.path.join(BASE_DIR, 'data', 'elmo_config_files', 'elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5')
 
 
 def get_elmo_vec_similarity(elmo_model, all_sents, ref_num):
@@ -55,9 +60,10 @@ def run_elmo_vec_metrics(year, ref_metric):
     peer_summaries = PeerSummaryReader(BASE_DIR)(year)
     tacData = TacData(BASE_DIR,year)
     human = tacData.getHumanScores('summary', 'pyramid') # responsiveness or pyramid
+    # changed by wchen, download and use the local options_file and weight_file
     elmo_model = Elmo(options_file, weight_file, 2, dropout=0)
     elmo_model.to('cuda')
-    bert_model = SentenceTransformer('bert-large-nli-mean-tokens')#'bert-large-nli-stsb-mean-tokens')
+    bert_model = SentenceTransformer(bert_large_nli_mean_tokens_path)#'bert-large-nli-stsb-mean-tokens')
 
     mystopwords = set(stopwords.words(LANGUAGE))
     stemmer = PorterStemmer()
@@ -109,6 +115,8 @@ def run_elmo_vec_metrics(year, ref_metric):
 
 
 if __name__ == '__main__':
-    run_elmo_vec_metrics(year='08', ref_metric='top12_1')
+    # '08', '09', '2010', '2011'
+    year = '2010'
+    run_elmo_vec_metrics(year=year, ref_metric='top12_1')
 
 

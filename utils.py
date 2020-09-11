@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.tokenize import sent_tokenize
@@ -82,7 +83,10 @@ def parse_docs(docs,bert_model):
     sent_index = {}
     cnt = 0
     for dd in docs:
-        dname = dd[0].split('/')[-1]
+        # changed by wchen to adopt to both Linux and Windows machine
+        # dname = dd[0].split('/')[-1]
+        dname = os.path.basename(dd[0])
+
         doc_len = len(dd[1])
         for i, sent in enumerate(dd[1]):
             sent_index[cnt] = {'doc': dname, 'text': sent, 'inside_doc_idx': i, 'doc_len': doc_len,

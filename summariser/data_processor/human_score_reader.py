@@ -4,9 +4,14 @@ import xmltodict
 
 class TacData:
     def __init__(self,base_dir,year):
-        assert str(year) in ['08','09']
+        # adopted by wchen
+        assert str(year) in ['08','09', '2010', '2011']
         self._year = year
-        self._basedir = os.path.join(base_dir,'data','human_evaluations','UpdateSumm{}_eval'.format(year))
+        if str(year) in ['08', '09']:
+            self._basedir = os.path.join(base_dir,'data','human_evaluations','UpdateSumm{}_eval'.format(year))
+        else:
+            # TAC 2010 or 2011
+            self._basedir = os.path.join(base_dir, 'data', 'human_evaluations', 'GuidedSumm{}_eval'.format(year))
 
     def getHumanScores(self,level,metric):
         if level == 'system' or level == 'macro':
