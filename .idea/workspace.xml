@@ -8,13 +8,20 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1gXj8uc9nKOfKYDe1TFhrqai6FN" />
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/logs" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../OpenNMT-py" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -180,7 +187,8 @@
       <option name="presentableId" value="Default" />
       <updated>1598267674255</updated>
       <workItem from="1598267675880" duration="2136000" />
-      <workItem from="1599621404591" duration="43017000" />
+      <workItem from="1599621404591" duration="47732000" />
+      <workItem from="1600136285437" duration="1471000" />
     </task>
     <servers />
   </component>
@@ -235,22 +243,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/ref_free_metrics/similarity_measurements/bert_metrics.py</url>
-          <line>116</line>
+          <line>122</line>
           <option name="timeStamp" value="51" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/ref_free_metrics/similarity_measurements/bert_metrics.py</url>
-          <line>56</line>
-          <option name="timeStamp" value="53" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/ref_free_metrics/similarity_measurements/bert_metrics.py</url>
-          <line>120</line>
+          <line>126</line>
           <option name="timeStamp" value="54" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/ref_free_metrics/similarity_measurements/bert_metrics.py</url>
-          <line>126</line>
+          <line>132</line>
           <option name="timeStamp" value="55" />
         </line-breakpoint>
       </breakpoints>
