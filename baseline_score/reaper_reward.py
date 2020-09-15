@@ -16,6 +16,7 @@ from summariser.data_processor.human_score_reader import TacData
 from summariser.utils.evaluator import evaluateReward, addResult
 from summariser.utils.data_helpers import sent2stokens_wostop
 
+import config
 
 class ReaperMetricGenerator:
     def __init__(self,docs):
@@ -77,15 +78,24 @@ def get_human_score(topic, summ_name, human):
 
 
 if __name__ == '__main__':
+    # get the general configuration
+    parser = config.ArgumentParser("reaper_reward.py")
+    config.general_args(parser)
+    opt = parser.parse_args()
+    print("\nMetric: reaper_reward.py")
+    print("Configurations:", opt)
     # '08', '09', '2010', '2011'
-    year = '2010'
-    human_metric = 'pyramid'
+    year = opt.year
+    ref_summ = opt.ref_summ
+    human_metric = opt.human_metric
+    eval_level = opt.evaluation_level
+    device = opt.device
 
     print('\n=====year: {}====='.format(year))
     print('=====human score: {}====='.format(human_metric))
 
     tacData = TacData(BASE_DIR,year)
-    human = tacData.getHumanScores('summary', human_metric) # responsiveness or pyramid
+    human = tacData.getHumanScores(eval_level, human_metric) # responsiveness or pyramid
     reaper_scores = get_reaper_scores(year)
     all_results = {}
     for topic in reaper_scores:

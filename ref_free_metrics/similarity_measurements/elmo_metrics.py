@@ -24,10 +24,11 @@ from summariser.utils.data_helpers import sent2stokens_wostop, sent2tokens_wosto
 # options_file = "https://allennlp.s3.amazonaws.com/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_options.json"
 # weight_file = "https://allennlp.s3.amazonaws.com/models/elmo/2x4096_512_2048cnn_2xhighway/elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5"
 
-from resources import bert_large_nli_mean_tokens_path
+from resources import SENT_TRANSFORMER_TYPE_PATH_DIC
 options_file = os.path.join(BASE_DIR, 'data', 'elmo_config_files', 'elmo_2x4096_512_2048cnn_2xhighway_options.json')
 weight_file = os.path.join(BASE_DIR, 'data', 'elmo_config_files', 'elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5')
 
+import config
 
 def get_elmo_vec_similarity(elmo_model, all_sents, ref_num, device='cpu'):
     vec_matrix = []
@@ -53,17 +54,19 @@ def get_elmo_vec_similarity(elmo_model, all_sents, ref_num, device='cpu'):
     return [ss if j+ref_num not in non_idx else None for j,ss in enumerate(scores)]
 
 
-def run_elmo_vec_metrics(year, ref_metric, device='cpu'):
+def run_elmo_vec_metrics(year, ref_metric, eval_level='summary', human_metric='pyramid',
+                         sent_transformer_type='bert_large_nli_mean_tokens', device='cpu'):
     print('year: {}, ref_metric: {}, sim_metric: elmo'.format(year,ref_metric))
 
     corpus_reader = CorpusReader(BASE_DIR)
     peer_summaries = PeerSummaryReader(BASE_DIR)(year)
     tacData = TacData(BASE_DIR,year)
-    human = tacData.getHumanScores('summary', 'pyramid') # responsiveness or pyramid
+    human = tacData.getHumanScores(eval_level, human_metric) # responsiveness or pyramid
     # changed by wchen, download and use the local options_file and weight_file
     elmo_model = Elmo(options_file, weight_file, 2, dropout=0)
     elmo_model.to(device) # chenged by wchen
-    bert_model = SentenceTransformer(bert_large_nli_mean_tokens_path)#'bert-large-nli-stsb-mean-tokens')
+    sent_transformer_path = SENT_TRANSFORMER_TYPE_PATH_DIC[sent_transformer_type]
+    bert_model = SentenceTransformer(sent_transformer_path)#'bert-large-nli-stsb-mean-tokens')
 
     mystopwords = set(stopwords.words(LANGUAGE))
     stemmer = PorterStemmer()
@@ -116,8 +119,21 @@ def run_elmo_vec_metrics(year, ref_metric, device='cpu'):
 
 
 if __name__ == '__main__':
+    # get the general configuration
+    parser = config.ArgumentParser("elmo_metrics.py")
+    config.general_args(parser)
+    config.pseudo_ref_sim_metrics_args(parser)
+    opt = parser.parse_args()
+    print("\nMetric: elmo_metrics.py")
+    print("Configurations:", opt)
     # '08', '09', '2010', '2011'
-    year = '2010'
-    run_elmo_vec_metrics(year=year, ref_metric='top12_1')
+    year = opt.year
+    human_metric = opt.human_metric
+    ref_metric = opt.ref_metric
+    eval_level = opt.evaluation_level
+    sent_transformer_type = opt.sent_transformer_type
+    device = opt.device
+    run_elmo_vec_metrics(year=year, ref_metric=ref_metric, eval_level=eval_level, human_metric=human_metric,
+                         sent_transformer_type=sent_transformer_type, device=device)
 
 

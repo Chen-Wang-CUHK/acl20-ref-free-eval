@@ -16,6 +16,7 @@ from summariser.data_processor.human_score_reader import TacData
 from summariser.utils.evaluator import evaluateReward, addResult
 from summariser.utils.data_helpers import sent2stokens_wostop
 
+import config
 
 def get_tfidf_scores(year,ref_summ):
     corpus_reader = CorpusReader(BASE_DIR)
@@ -73,10 +74,18 @@ def get_human_score(topic, summ_name, human):
 
 
 if __name__ == '__main__':
+    # get the general configuration
+    parser = config.ArgumentParser("global_tfidf_reward.py")
+    config.general_args(parser)
+    opt = parser.parse_args()
+    print("\nMetric: global_tfidf_reward.py")
+    print("Configurations:", opt)
     # '08', '09', '2010', '2011'
-    year = '2010'
-    human_metric = 'pyramid'
-    ref_summ = False
+    year = opt.year
+    ref_summ = opt.ref_summ
+    human_metric = opt.human_metric
+    eval_level = opt.evaluation_level
+    device = opt.device
 
     print('\n=====year: {}====='.format(year))
     print('=====human score: {}====='.format(human_metric))

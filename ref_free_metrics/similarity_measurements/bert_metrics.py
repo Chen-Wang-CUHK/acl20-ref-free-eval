@@ -26,6 +26,8 @@ from summariser.utils.data_helpers import sent2stokens_wostop, sent2tokens_wosto
 # from resources import roberta_large_path, roberta_large_mnli_path, roberta_large_openai_detector_path
 from resources import BERT_TYPE_PATH_DIC, SENT_TRANSFORMER_TYPE_PATH_DIC
 
+import config
+
 def get_token_vecs(model, tokenizer, sent_list, gpu, bert_type):
     token_vecs = None
 
@@ -59,15 +61,16 @@ def get_bert_vec_similarity(model, tokenizer, all_sents, ref_num, gpu, bert_type
     return [ss if j+ref_num not in non_idx else None for j,ss in enumerate(scores)]
 
 
-def run_bert_vec_metrics(year, ref_metric, bert_type, gpu=True):
+def run_bert_vec_metrics(year, ref_metric, bert_type, eval_level='summary', human_metric='pyramid',
+                         sent_transformer_type='bert_large_nli_mean_tokens', device='cpu'):
     print('year: {}, ref_metric: {}, bert_type: {}'.format(year,ref_metric,bert_type))
 
     corpus_reader = CorpusReader(BASE_DIR)
     peer_summaries = PeerSummaryReader(BASE_DIR)(year)
     tacData = TacData(BASE_DIR,year)
-    human = tacData.getHumanScores('summary', 'pyramid') # responsiveness or pyramid
-    bert_large_nli_mean_tokens_path = SENT_TRANSFORMER_TYPE_PATH_DIC['bert_large_nli_mean_tokens']
-    sbert_model = SentenceTransformer(bert_large_nli_mean_tokens_path)# 'bert-large-nli-mean-tokens' 'bert-large-nli-stsb-mean-tokens')
+    human = tacData.getHumanScores(eval_level, human_metric) # responsiveness or pyramid
+    sent_transformer_path = SENT_TRANSFORMER_TYPE_PATH_DIC[sent_transformer_type]
+    sbert_model = SentenceTransformer(sent_transformer_path)# 'bert-large-nli-mean-tokens' 'bert-large-nli-stsb-mean-tokens')
 
     if bert_type == 'bert':
         bert_large_uncased_path = BERT_TYPE_PATH_DIC['bert']
@@ -91,7 +94,7 @@ def run_bert_vec_metrics(year, ref_metric, bert_type, gpu=True):
             roberta_large_path = BERT_TYPE_PATH_DIC['roberta_large']
             berttokenizer = RobertaTokenizer.from_pretrained(roberta_large_path) # 'roberta-large'
             bertmodel = RobertaModel.from_pretrained(roberta_large_path) # 'roberta-large'
-    if gpu: bertmodel.to('cuda')
+    if 'gpu' in device.lower(): bertmodel.to(device)
 
     mystopwords = set(stopwords.words(LANGUAGE))
     stemmer = PorterStemmer()
@@ -145,7 +148,24 @@ def run_bert_vec_metrics(year, ref_metric, bert_type, gpu=True):
 
 
 if __name__ == '__main__':
+    # get the general configuration
+    parser = config.ArgumentParser("bert_metrics.py")
+    config.general_args(parser)
+    config.pseudo_ref_sim_metrics_args(parser)
+    opt = parser.parse_args()
+    print("\nMetric: bert_metrics.py")
+    print("Configurations:", opt)
     # '08', '09', '2010', '2011'
-    year = '2010'
-    run_bert_vec_metrics(year=year, ref_metric='top12_1', bert_type='bert', gpu=False)
+    year = opt.year
+    ref_summ = opt.ref_summ
+    human_metric = opt.human_metric
+    ref_metric = opt.ref_metric
+    eval_level = opt.evaluation_level
+    sent_transformer_type = opt.sent_transformer_type
+    bert_type = opt.bert_type
+    device = opt.device
+    run_bert_vec_metrics(year=year, ref_metric=ref_metric, bert_type=bert_type,
+                         eval_level=eval_level, human_metric=human_metric,
+                         sent_transformer_type=sent_transformer_type,
+                         device=device)
 

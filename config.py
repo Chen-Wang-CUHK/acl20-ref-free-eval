@@ -1,5 +1,7 @@
 import configargparse as cfargparse
 
+ArgumentParser = cfargparse.ArgumentParser
+
 
 def general_args(parser):
     """

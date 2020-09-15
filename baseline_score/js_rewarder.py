@@ -16,6 +16,7 @@ from summariser.utils.misc import jsd,normaliseList
 from summariser.data_processor.human_score_reader import TacData
 from summariser.utils.evaluator import evaluateReward, addResult
 
+import config
 
 class JSMetricGenerator:
     def __init__(self,docs,nlist=None,wanted='js'):
@@ -107,9 +108,19 @@ def get_human_score(topic, summ_name, human):
 
 
 if __name__ == '__main__':
+    # get the general configuration
+    parser = config.ArgumentParser("js_rewarder.py")
+    config.general_args(parser)
+    opt = parser.parse_args()
+    print("\nMetric: js_rewarder.py")
+    print("Configurations:", opt)
     # '08', '09', '2010', '2011'
-    year = '2010'
-    human_metric = 'pyramid'
+    year = opt.year
+    ref_summ = opt.ref_summ
+    human_metric = opt.human_metric
+    eval_level = opt.evaluation_level
+    device = opt.device
+
     ngram_list = [1]
     wanted = 'js'
 
@@ -118,7 +129,7 @@ if __name__ == '__main__':
     print('=====system score: {} {}=====\n'.format(wanted,ngram_list))
 
     tacData = TacData(BASE_DIR,year)
-    human = tacData.getHumanScores('summary', human_metric) # responsiveness or pyramid
+    human = tacData.getHumanScores(eval_level, human_metric) # responsiveness or pyramid
     js_scores = get_js_scores(year,ngram_list,wanted)
     all_results = {}
     for topic in js_scores:
