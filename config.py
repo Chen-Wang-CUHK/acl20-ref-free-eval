@@ -19,7 +19,7 @@ def general_args(parser):
     group.add('--evaluation_level', '-evaluation_level', type=str, default='summary',
               choices=['summary', 'micro', 'system', 'macro'],
               help="The level to evaluate the summarization systems")
-    group.add('--device', '-device', type=str, default='cpu',
+    group.add('--device', '-device', type=str, default='cpu', choices=["cpu", "cuda"],
               help="The selected device to run the code")
 
 
