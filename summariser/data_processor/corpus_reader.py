@@ -45,7 +45,7 @@ class CorpusReader:
         return model_dic
 
     def readOneModel(self,mpath):
-        ff = open(mpath,'r')
+        ff = open(mpath,'r', encoding='cp1252')
         sents = []
         for line in ff.readlines():
             if line.strip() != '':
@@ -75,7 +75,7 @@ class CorpusReader:
         return data_dic
 
     def readOneDoc(self,dpath):
-        ff = open(dpath,'r')
+        ff = open(dpath,'r', encoding='cp1252')
         flag = False
         text = []
         for line in ff.readlines():
