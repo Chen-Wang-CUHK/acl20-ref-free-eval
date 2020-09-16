@@ -36,3 +36,14 @@ def pseudo_ref_sim_metrics_args(parser):
     group.add('--sent_transformer_type', '-sent_transformer_type', type=str, default='bert_large_nli_mean_tokens',
               choices=['bert_large_nli_mean_tokens', 'bert_large_nli_stsb_mean_tokens'],
               help="The pretrained sentence transformer used to encoding the sentences of the documents.")
+
+
+def pseudo_ref_wmd_metrics_args(parser):
+    '''
+    add some options for bert_metrics, elmo_metrics, js_metrics, sbert_score_metrics
+    '''
+    group = parser.add_argument_group("pseudo_ref_wmd_metrics_args")
+    group.add('--wmd_score_type', '-wmd_score_type', type=str, default='f1', choices=['f1', 'precision', 'recall'],
+              help="The type of word-mover-distance score")
+    group.add('--wmd_weight_type', '-wmd_weight_type', type=str, default='none', choices=['idf', 'none'],
+              help="The type of word-mover-distance weight")

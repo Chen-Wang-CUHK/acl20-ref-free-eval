@@ -47,29 +47,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.tfidf_reward">
-    <configuration name="elmo_metrics" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="acl20-ref-free-eval" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ref_free_metrics/similarity_measurements" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ref_free_metrics/similarity_measurements/elmo_metrics.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.sbert_score_metrics">
     <configuration name="global_tfidf_reward" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="acl20-ref-free-eval" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -136,6 +114,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="sbert_score_metrics" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="acl20-ref-free-eval" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ref_free_metrics/similarity_measurements" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ref_free_metrics/similarity_measurements/sbert_score_metrics.py" />
+      <option name="PARAMETERS" value="-sent_transformer_type=bert_large_nli_stsb_mean_tokens" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="tfidf_reward" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="acl20-ref-free-eval" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -159,19 +159,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.elmo_metrics" />
       <item itemvalue="Python.tfidf_reward" />
       <item itemvalue="Python.global_tfidf_reward" />
       <item itemvalue="Python.js_rewarder" />
       <item itemvalue="Python.reaper_reward" />
+      <item itemvalue="Python.sbert_score_metrics" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.sbert_score_metrics" />
         <item itemvalue="Python.tfidf_reward" />
         <item itemvalue="Python.reaper_reward" />
         <item itemvalue="Python.js_rewarder" />
         <item itemvalue="Python.global_tfidf_reward" />
-        <item itemvalue="Python.elmo_metrics" />
       </list>
     </recent_temporary>
   </component>
@@ -187,7 +187,7 @@
       <updated>1598267674255</updated>
       <workItem from="1598267675880" duration="2136000" />
       <workItem from="1599621404591" duration="47732000" />
-      <workItem from="1600136285437" duration="13315000" />
+      <workItem from="1600136285437" duration="18783000" />
     </task>
     <servers />
   </component>
@@ -250,6 +250,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/acl20_ref_free_eval$tfidf_reward.coverage" NAME="tfidf_reward Coverage Results" MODIFIED="1600229875198" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/baseline_score" />
+    <SUITE FILE_PATH="coverage/acl20_ref_free_eval$sbert_score_metrics.coverage" NAME="sbert_score_metrics Coverage Results" MODIFIED="1600264578487" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ref_free_metrics/similarity_measurements" />
     <SUITE FILE_PATH="coverage/acl20_ref_free_eval$bert_metrics.coverage" NAME="bert_metrics Coverage Results" MODIFIED="1599816255888" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ref_free_metrics/similarity_measurements" />
     <SUITE FILE_PATH="coverage/acl20_ref_free_eval$global_tfidf_reward.coverage" NAME="global_tfidf_reward Coverage Results" MODIFIED="1600151073790" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/baseline_score" />
     <SUITE FILE_PATH="coverage/acl20_ref_free_eval$js_rewarder.coverage" NAME="js_rewarder Coverage Results" MODIFIED="1600151318513" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/baseline_score" />

@@ -1,4 +1,5 @@
 import sys
+import os
 sys.path.append('../..')
 
 from sentence_transformers import SentenceTransformer
@@ -14,6 +15,9 @@ from ref_free_metrics.similarity_scorer import parse_documents
 from utils import get_human_score
 from summariser.data_processor.human_score_reader import TacData
 from summariser.utils.evaluator import evaluateReward, addResult
+
+from resources import BERT_TYPE_PATH_DIC, SENT_TRANSFORMER_TYPE_PATH_DIC
+import config
 
 
 def get_idf(doc_token_list):
@@ -36,13 +40,13 @@ def get_idf(doc_token_list):
     return np.array(idf_list)
 
 
-def get_sbert_score(ref_token_vecs, ref_tokens, summ_token_vecs, summ_tokens, sim_metric):
+def get_sbert_score(ref_token_vecs, ref_tokens, summ_token_vecs, summ_tokens, wmd_score_type, wmd_weight_type):
     recall_list = []
     precision_list = []
     f1_list = []
     empty_summs_ids = []
 
-    if 'idf' in sim_metric:
+    if 'idf' in wmd_weight_type:
         ref_idf = get_idf(ref_tokens)
         summ_idf = get_idf(summ_tokens)
 
@@ -58,7 +62,7 @@ def get_sbert_score(ref_token_vecs, ref_tokens, summ_token_vecs, summ_tokens, si
                 r_f1_list.append(None)
                 continue
             sim_matrix = cosine_similarity(rvecs,svecs)
-            if 'idf' in sim_metric:
+            if 'idf' in wmd_weight_type:
                 idf_recall = np.dot(np.max(sim_matrix, axis=1), ref_idf[i])
                 idf_precision = np.dot(np.max(sim_matrix, axis=0), summ_idf[j])
                 idf_f1 = 2. * idf_recall * idf_precision / (idf_recall + idf_precision)
@@ -79,14 +83,14 @@ def get_sbert_score(ref_token_vecs, ref_tokens, summ_token_vecs, summ_tokens, si
     recall_list = np.array(recall_list)
     precision_list = np.array(precision_list)
     f1_list = np.array(f1_list)
-    if 'recall' in sim_metric:
+    if 'recall' in wmd_score_type:
         scores = []
         for i in range(len(summ_token_vecs)):
             if i in empty_summs_ids: scores.append(None)
             else: scores.append(np.mean(recall_list[:,i]))
         return scores
         #return np.mean(np.array(recall_list), axis=0)
-    elif 'precision' in sim_metric:
+    elif 'precision' in wmd_score_type:
         scores = []
         for i in range(len(summ_token_vecs)):
             if i in empty_summs_ids: scores.append(None)
@@ -94,7 +98,7 @@ def get_sbert_score(ref_token_vecs, ref_tokens, summ_token_vecs, summ_tokens, si
         return scores
         #return np.mean(np.array(precision_list), axis=0)
     else:
-        assert 'f1' in sim_metric
+        assert 'f1' in wmd_score_type
         scores = []
         for i in range(len(summ_token_vecs)):
             if i in empty_summs_ids: scores.append(None)
@@ -122,14 +126,18 @@ def get_token_vecs(model,sents,remove_stopwords=True):
     return full_vec[wanted_idx], np.array(full_token)[wanted_idx]
 
 
-def run_sbert_score_metrics(year, ref_metric, sim_metric):
-    print('year: {}, ref_metric: {}, sim_metric: sbert-{}'.format(year,ref_metric,sim_metric))
-    sbert_type = sim_metric
+def run_sbert_score_metrics(year, ref_metric, wmd_score_type, wmd_weight_type,
+                            eval_level='summary', human_metric='pyramid',
+                            sent_transformer_type='bert_large_nli_stsb_mean_tokens', device='cpu'):
+    print('year: {}, ref_metric: {}, wmd_score_type: sbert-{}'.format(year,ref_metric,wmd_score_type))
+    sbert_type = wmd_score_type
     corpus_reader = CorpusReader(BASE_DIR)
     peer_summaries = PeerSummaryReader(BASE_DIR)(year)
     tacData = TacData(BASE_DIR,year)
-    human = tacData.getHumanScores('summary', 'pyramid') # responsiveness or pyramid
-    bert_model = SentenceTransformer('bert-large-nli-stsb-mean-tokens')  # 'bert-large-nli-stsb-mean-tokens')
+    human = tacData.getHumanScores(eval_level, human_metric) # responsiveness or pyramid
+    assert sent_transformer_type == 'bert_large_nli_stsb_mean_tokens'
+    sent_transformer_path = SENT_TRANSFORMER_TYPE_PATH_DIC[sent_transformer_type]
+    bert_model = SentenceTransformer(sent_transformer_path)  # 'bert-large-nli-stsb-mean-tokens')
     all_results = {}
 
 
@@ -165,9 +173,10 @@ def run_sbert_score_metrics(year, ref_metric, sim_metric):
             summ_vecs.append(vv)
             summ_tokens.append(tt)
         # get sbert-score
-        pss = get_sbert_score(ref_vecs, ref_tokens, summ_vecs, summ_tokens, sbert_type)
+        pss = get_sbert_score(ref_vecs, ref_tokens, summ_vecs, summ_tokens, sbert_type, wmd_weight_type)
         # compute correlation
-        hss = [get_human_score(topic,ss[0].split('/')[-1],human) for ss in peer_summaries[topic]]
+        # (topic,ss[0].split('/')[-1],human)
+        hss = [get_human_score(topic, os.path.basename(ss[0]), human) for ss in peer_summaries[topic]]
         pseudo_scores, human_scores = [], []
         for i in range(len(pss)):
             if hss[i] is not None and pss[i] is not None:
@@ -181,13 +190,37 @@ def run_sbert_score_metrics(year, ref_metric, sim_metric):
             print('{}:\t{}'.format(kk,results[kk]))
 
     print('\n=====ALL RESULTS=====')
-    print('year: {}, ref_metric: {}, sim_metric: sbert-{}'.format(year,ref_metric,sim_metric))
+    print('year: {}, ref_metric: {}, wmd_score_type: sbert-{}'.format(year,ref_metric,wmd_score_type))
     for kk in all_results:
         if kk.startswith('p_'): continue
         print('{}:\tmax {:.4f}, min {:.4f}, mean {:.4f}, median {:.4f}, significant {} out of {}'.format(kk, np.max(all_results[kk]), np.min(all_results[kk]), np.mean(all_results[kk]), np.median(all_results[kk]), len([p for p in all_results['p_{}'.format(kk)] if p<0.05]), len(all_results[kk])))
 
 
-
 if __name__ == '__main__':
-    run_sbert_score_metrics(year='08', ref_metric='top12_1', sim_metric='f1')
+    # get the general configuration
+    parser = config.ArgumentParser("sbert_score_metrics.py")
+    config.general_args(parser)
+    config.pseudo_ref_sim_metrics_args(parser)
+    config.pseudo_ref_wmd_metrics_args(parser)
+    opt = parser.parse_args()
+    print("\nMetric: sbert_score_metrics.py")
+    print("Configurations:", opt)
+    # '08', '09', '2010', '2011'
+    year = opt.year
+    ref_summ = opt.ref_summ
+    human_metric = opt.human_metric
+    ref_metric = opt.ref_metric
+    eval_level = opt.evaluation_level
+    sent_transformer_type = opt.sent_transformer_type
+    bert_type = opt.bert_type
+    device = opt.device
+    wmd_score_type = opt.wmd_score_type
+    wmd_weight_type = opt.wmd_weight_type
+    run_sbert_score_metrics(year=year, ref_metric=ref_metric,
+                            wmd_score_type=wmd_score_type,
+                            wmd_weight_type=wmd_weight_type,
+                            eval_level=eval_level,
+                            human_metric=human_metric,
+                            sent_transformer_type=sent_transformer_type,
+                            device=device)
 
