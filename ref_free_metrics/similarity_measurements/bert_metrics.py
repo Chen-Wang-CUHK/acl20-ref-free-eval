@@ -28,7 +28,7 @@ from resources import BERT_TYPE_PATH_DIC, SENT_TRANSFORMER_TYPE_PATH_DIC
 
 import config
 
-def get_token_vecs(model, tokenizer, sent_list, gpu, bert_type):
+def get_token_vecs(model, tokenizer, sent_list, device, bert_type):
     token_vecs = None
 
     for i in range(0,len(sent_list),5):
@@ -36,15 +36,15 @@ def get_token_vecs(model, tokenizer, sent_list, gpu, bert_type):
         if 'roberta' in bert_type: ss = '<s>' + ss + '</s>'
         tokens = tokenizer.encode(ss)
         tokens = torch.tensor(tokens).unsqueeze(0)
-        if gpu:
-            tokens = tokens.to('cuda')
+        tokens = tokens.to(device)
+
         vv = model(tokens)[0][0].data.cpu().numpy()
         if token_vecs is None: token_vecs = vv
         else: token_vecs = np.vstack((token_vecs,vv))
     return  token_vecs
 
 
-def get_bert_vec_similarity(model, tokenizer, all_sents, ref_num, gpu, bert_type):
+def get_bert_vec_similarity(model, tokenizer, all_sents, ref_num, device, bert_type):
     vec_matrix = []
     non_idx = []
     for i,doc in enumerate(all_sents):
@@ -54,7 +54,7 @@ def get_bert_vec_similarity(model, tokenizer, all_sents, ref_num, gpu, bert_type
             #else: vec_matrix.append([0.]*1024)
             vec_matrix.append([0.]*1024)
             continue
-        token_vecs = get_token_vecs(model, tokenizer, doc, gpu, bert_type)
+        token_vecs = get_token_vecs(model, tokenizer, doc, device, bert_type)
         vec_matrix.append(np.mean(token_vecs,axis=0))
     sim_matrix = cosine_similarity(vec_matrix[ref_num:], vec_matrix[:ref_num])
     scores = np.mean(sim_matrix,axis=1)
@@ -123,7 +123,7 @@ def run_bert_vec_metrics(year, ref_metric, bert_type, eval_level='summary', huma
         for ss in peer_summaries[topic]:
             all_sents.append(ss[1])
         # compute word-vec-cosine score
-        pss = get_bert_vec_similarity(bertmodel,berttokenizer,all_sents,len(ref_sources),gpu,bert_type)
+        pss = get_bert_vec_similarity(bertmodel,berttokenizer,all_sents,len(ref_sources),device,bert_type)
         # compute correlation
         # changed by wchen to adopt to both Linux and Windows machine
         # (topic, ss[0].split('/')[-1]), human)
