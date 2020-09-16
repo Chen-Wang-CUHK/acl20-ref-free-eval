@@ -94,7 +94,8 @@ def run_bert_vec_metrics(year, ref_metric, bert_type, eval_level='summary', huma
             roberta_large_path = BERT_TYPE_PATH_DIC['roberta_large']
             berttokenizer = RobertaTokenizer.from_pretrained(roberta_large_path) # 'roberta-large'
             bertmodel = RobertaModel.from_pretrained(roberta_large_path) # 'roberta-large'
-    if 'gpu' in device.lower(): bertmodel.to(device)
+    # move the model the appropriate device
+    bertmodel.to(device)
 
     mystopwords = set(stopwords.words(LANGUAGE))
     stemmer = PorterStemmer()
