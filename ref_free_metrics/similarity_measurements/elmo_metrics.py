@@ -95,7 +95,7 @@ def run_elmo_vec_metrics(year, ref_metric, eval_level='summary', human_metric='p
         for ss in peer_summaries[topic]:
             all_sents.append(ss[1])
         # compute word-vec-cosine score
-        pss = get_elmo_vec_similarity(elmo_model,all_sents,len(ref_sources))
+        pss = get_elmo_vec_similarity(elmo_model,all_sents,len(ref_sources), device=device)
         # compute correlation
         # (topic, ss[0].split('/')[-1]), human)
         hss = [get_human_score(topic, os.path.basename(ss[0]), human) for ss in peer_summaries[topic]]
