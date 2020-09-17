@@ -44,7 +44,7 @@ class SentenceTransformer(nn.Sequential):
                     torch_cache_home = os.path.expanduser(
                         os.getenv('TORCH_HOME', os.path.join(
                             os.getenv('XDG_CACHE_HOME', '~/.cache'), 'torch')))
-                default_cache_path = os.path.join(torch_cache_home, 'sentence_transformers')
+                default_cache_path = os.path.join(torch_cache_home, 'my_sentence_transformers')
                 model_path = os.path.join(default_cache_path, folder_name)
                 os.makedirs(model_path, exist_ok=True)
 
@@ -72,6 +72,8 @@ class SentenceTransformer(nn.Sequential):
 
                 modules = OrderedDict()
                 for module_config in contained_modules:
+                    # changed by wchen to use my_sentence_transformers
+                    module_config['type'] = module_config['type'].replace('sentence_transformers', 'my_sentence_transformers')
                     module_class = import_from_string(module_config['type'])
                     module = module_class.load(os.path.join(model_path, module_config['path']))
                     modules[module_config['name']] = module
