@@ -84,7 +84,7 @@ class SentenceTransformer(nn.Sequential):
         self.device = torch.device(device)
         self.to(device)
 
-    def encode(self, sentences: List[str], batch_size: int = 8, show_progress_bar: bool = None, token_vecs: bool=False) -> List[ndarray]:
+    def encode(self, sentences: List[str], batch_size: int = 8, show_progress_bar: bool = None, token_vecs: bool = False) -> List[ndarray]:
         """
         Computes sentence embeddings
         :param sentences:
@@ -93,6 +93,8 @@ class SentenceTransformer(nn.Sequential):
            the batch size used for the computation
         :param show_progress_bar:
             Output a progress bar when encode sentences
+        :param token_vecs:
+            Output the token vecters
         :return:
            a list with ndarrays of the embeddings for each sentence
         """
