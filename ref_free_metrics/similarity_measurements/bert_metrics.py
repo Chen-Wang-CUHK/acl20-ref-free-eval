@@ -70,7 +70,7 @@ def run_bert_vec_metrics(year, ref_metric, bert_type, eval_level='summary', huma
     tacData = TacData(BASE_DIR,year)
     human = tacData.getHumanScores(eval_level, human_metric) # responsiveness or pyramid
     sent_transformer_path = SENT_TRANSFORMER_TYPE_PATH_DIC[sent_transformer_type]
-    sbert_model = SentenceTransformer(sent_transformer_path)# 'bert-large-nli-mean-tokens' 'bert-large-nli-stsb-mean-tokens')
+    sbert_model = SentenceTransformer(sent_transformer_path, device=device)# 'bert-large-nli-mean-tokens' 'bert-large-nli-stsb-mean-tokens')
 
     if bert_type == 'bert':
         bert_large_uncased_path = BERT_TYPE_PATH_DIC['bert']
