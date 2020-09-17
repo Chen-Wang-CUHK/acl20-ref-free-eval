@@ -109,9 +109,6 @@ def get_sbert_score(ref_token_vecs, ref_tokens, summ_token_vecs, summ_tokens, wm
 
 def get_token_vecs(model,sents,remove_stopwords=True):
     if len(sents) == 0: return None, None
-    print(type(model),'\n')
-    print(os.path.abspath(model.__file__))
-    print(model.encode.__code__.co_varnames[:model.encode.__code__.co_argcount],'\n')
     vecs, tokens = model.encode(sents, token_vecs=True)
     for i, rtv in enumerate(vecs):
         if i==0:
