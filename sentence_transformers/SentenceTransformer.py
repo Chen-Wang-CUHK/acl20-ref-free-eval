@@ -94,7 +94,7 @@ class SentenceTransformer(nn.Sequential):
         :param show_progress_bar:
             Output a progress bar when encode sentences
         :param token_vecs:
-            Output the token vecters
+            Output the token vectors
         :return:
            a list with ndarrays of the embeddings for each sentence
         """
