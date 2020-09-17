@@ -43,7 +43,7 @@ def get_subgraph(sim_matrix, threshold):
                 gg.add_node(i)
                 gg.add_node(j)
                 gg.add_edge(i,j)
-    subgraph = [gg.subgraph(c) for c in nx.connected_components(gg)]
+    subgraph = list(nx.connected_component_subgraphs(gg))
     subgraph_nodes = [list(sg._node.keys()) for sg in subgraph]
     return list(subgraph_nodes)
 
@@ -51,6 +51,12 @@ def get_subgraph(sim_matrix, threshold):
 def get_other_weights(full_vec_list, sent_index, weights, thres):
     similarity_matrix = cosine_similarity(full_vec_list, full_vec_list)
     subgraphs = get_subgraph(similarity_matrix, thres)
+    '''
+    top_sent_idx = [i for i in range(len(weights)) if weights[i]>0.9]
+    for sg in subgraphs:
+        if len(set([sent_index[n]['doc'] for n in sg])) < 2: continue #must appear in multiple documents
+        for n in sg: weights[n]=1./len(sg)
+    '''
     for sg in subgraphs:
         if any(weights[n]>=0.9 for n in sg): continue #ignore the subgraph similar to a top sentence
         if len(set([sent_index[n]['doc'] for n in sg])) < 2: continue #must appear in multiple documents

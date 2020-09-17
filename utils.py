@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.tokenize import sent_tokenize
@@ -33,10 +34,10 @@ def get_ref_vecs(doc_sent_vecs, doc_sent_weights, info_dic):
     return vecs
 
 
-def get_sim_metric(summ_vec_list, doc_sent_vecs, doc_sent_weights, info_dic, method='cos'):
+def get_sim_metric(summ_vec_list, doc_sent_vecs, doc_sent_weights, info_dic, method='1'):
     #print('weights', doc_sent_weights)
-    # get the avg doc vec, then cosine
-    if method == 'cos':
+    # method 1: get the avg doc vec, then cosine
+    if method == '1':
         summ_vec = np.mean(np.array(summ_vec_list),axis=0)
         dvec = np.matmul(np.array(doc_sent_weights).reshape(1,-1),  np.array(doc_sent_vecs))
         return cosine_similarity(dvec,summ_vec.reshape(1,-1))[0][0]
@@ -44,7 +45,14 @@ def get_sim_metric(summ_vec_list, doc_sent_vecs, doc_sent_weights, info_dic, met
         #ref_vecs = get_ref_vecs(doc_sent_vecs, doc_sent_weights, info_dic)
         #sims = cosine_similarity(np.array(ref_vecs), np.array(summ_vec).reshape(1,-1))
         #return np.mean(sims)
-    # bert-score, quicker to run and gives similar performance to mover-bert-score
+
+    # method 2: cosine between each doc and the summ, then avg
+    elif method == '2':
+        summ_vec = np.mean(np.array(summ_vec_list),axis=0)
+        sim_matrix = cosine_similarity(np.array(doc_sent_vecs),summ_vec.reshape(1,-1))
+        mm = np.matmul(np.array(sim_matrix).reshape(1,-1),np.array(doc_sent_weights)).reshape(-1,1)[0][0]
+        return mm
+
     else:
         ref_vecs = [doc_sent_vecs[i] for i in range(len(doc_sent_weights)) if doc_sent_weights[i]>0.1]
         #ref_vecs = get_ref_vecs(doc_sent_vecs, doc_sent_weights, info_dic)
@@ -75,7 +83,10 @@ def parse_docs(docs,bert_model):
     sent_index = {}
     cnt = 0
     for dd in docs:
-        dname = dd[0].split('/')[-1]
+        # changed by wchen to adopt to both Linux and Windows machine
+        # dname = dd[0].split('/')[-1]
+        dname = os.path.basename(dd[0])
+
         doc_len = len(dd[1])
         for i, sent in enumerate(dd[1]):
             sent_index[cnt] = {'doc': dname, 'text': sent, 'inside_doc_idx': i, 'doc_len': doc_len,
@@ -86,6 +97,7 @@ def parse_docs(docs,bert_model):
     if bert_model is not None:
         all_vecs = bert_model.encode(all_sents)
     return sent_index, all_vecs #, all_sents
+
 
 
 def parse_refs(refs,model):
