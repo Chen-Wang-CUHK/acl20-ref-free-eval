@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append('../..')
 
-from sentence_transformers import SentenceTransformer
+from my_sentence_transformers import SentenceTransformer
 from transformers import *
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize

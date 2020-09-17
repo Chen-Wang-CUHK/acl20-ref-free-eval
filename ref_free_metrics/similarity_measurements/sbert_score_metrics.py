@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append('../..')
 
-from sentence_transformers import SentenceTransformer
+from my_sentence_transformers import SentenceTransformer
 from nltk.stem import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
