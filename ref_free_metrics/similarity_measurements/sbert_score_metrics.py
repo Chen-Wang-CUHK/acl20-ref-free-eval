@@ -137,7 +137,7 @@ def run_sbert_score_metrics(year, ref_metric, wmd_score_type, wmd_weight_type,
     human = tacData.getHumanScores(eval_level, human_metric) # responsiveness or pyramid
     assert sent_transformer_type == 'bert_large_nli_stsb_mean_tokens'
     sent_transformer_path = SENT_TRANSFORMER_TYPE_PATH_DIC[sent_transformer_type]
-    bert_model = SentenceTransformer(sent_transformer_path)  # 'bert-large-nli-stsb-mean-tokens')
+    bert_model = SentenceTransformer(sent_transformer_path, device=device)  # 'bert-large-nli-stsb-mean-tokens')
     all_results = {}
 
 

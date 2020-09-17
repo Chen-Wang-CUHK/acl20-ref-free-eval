@@ -66,7 +66,7 @@ def run_elmo_vec_metrics(year, ref_metric, eval_level='summary', human_metric='p
     elmo_model = Elmo(options_file, weight_file, 2, dropout=0)
     elmo_model.to(device) # chenged by wchen
     sent_transformer_path = SENT_TRANSFORMER_TYPE_PATH_DIC[sent_transformer_type]
-    bert_model = SentenceTransformer(sent_transformer_path)#'bert-large-nli-stsb-mean-tokens')
+    bert_model = SentenceTransformer(sent_transformer_path, device=device)#'bert-large-nli-stsb-mean-tokens')
 
     mystopwords = set(stopwords.words(LANGUAGE))
     stemmer = PorterStemmer()
