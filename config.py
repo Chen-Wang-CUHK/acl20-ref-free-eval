@@ -34,7 +34,7 @@ def pseudo_ref_sim_metrics_args(parser):
               choices=['bert', 'albert', 'roberta_large_mnli', 'roberta_large_openai_detector', 'roberta_large'],
               help="The pretrained model used to encoding the tokens of summaries.")
     group.add('--sent_transformer_type', '-sent_transformer_type', type=str, default='bert_large_nli_mean_tokens',
-              choices=['bert_large_nli_mean_tokens', 'bert_large_nli_stsb_mean_tokens'],
+              choices=['bert_large_nli_mean_tokens', 'bert_large_nli_stsb_mean_tokens', 'roberta_large_nli_stsb_mean_tokens'],
               help="The pretrained sentence transformer used to encoding the sentences of the documents.")
 
 
