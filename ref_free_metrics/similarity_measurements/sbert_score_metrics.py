@@ -135,7 +135,7 @@ def run_sbert_score_metrics(year, ref_metric, wmd_score_type, wmd_weight_type,
     peer_summaries = PeerSummaryReader(BASE_DIR)(year)
     tacData = TacData(BASE_DIR,year)
     human = tacData.getHumanScores(eval_level, human_metric) # responsiveness or pyramid
-    assert sent_transformer_type == 'bert_large_nli_stsb_mean_tokens'
+    # assert sent_transformer_type == 'bert_large_nli_stsb_mean_tokens'
     sent_transformer_path = SENT_TRANSFORMER_TYPE_PATH_DIC[sent_transformer_type]
     bert_model = SentenceTransformer(sent_transformer_path, device=device)  # 'bert-large-nli-stsb-mean-tokens')
     all_results = {}
@@ -194,7 +194,8 @@ def run_sbert_score_metrics(year, ref_metric, wmd_score_type, wmd_weight_type,
     for kk in all_results:
         if kk.startswith('p_'): continue
         print('{}:\tmax {:.4f}, min {:.4f}, mean {:.4f}, median {:.4f}, significant {} out of {}'.format(kk, np.max(all_results[kk]), np.min(all_results[kk]), np.mean(all_results[kk]), np.median(all_results[kk]), len([p for p in all_results['p_{}'.format(kk)] if p<0.05]), len(all_results[kk])))
-
+    if sent_transformer_type != 'bert_large_nli_stsb_mean_tokens':
+        print("WARNING: the sentence-transformer is not bert_large_nli_stsb_mean_tokens but {}".format(sent_transformer_type))
 
 if __name__ == '__main__':
     # get the general configuration
