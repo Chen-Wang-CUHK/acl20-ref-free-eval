@@ -45,6 +45,9 @@ class RoBERTa(nn.Module):
         """
         return self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(text))
 
+    def ids_to_tokens(self, ids: List[int]) -> List[str]:
+        return self.tokenizer.convert_ids_to_tokens(ids)
+
     def get_sentence_features(self, tokens: List[str], pad_seq_length: int):
         """
         Convert tokenized sentence in its embedding ids, segment ids and mask
