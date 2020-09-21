@@ -21,7 +21,7 @@ import config
 import json
 
 def moverscore_style_pseudo_ref_gen(year, ref_metric, eval_level='summary',
-                            sent_transformer_type='bert_large_nli_stsb_mean_tokens', device='cpu'):
+                                    sent_transformer_type='bert_large_nli_stsb_mean_tokens', device='cpu'):
     '''
     the format of moverscore style input dataset file
 
@@ -101,7 +101,10 @@ def moverscore_style_pseudo_ref_gen(year, ref_metric, eval_level='summary',
     # save the built moverscore style dataset file
     folder_name = os.path.join('data', 'moverscore_style_files')
     os.makedirs(folder_name, exist_ok=True)
-    file_name = os.path.join(folder_name, 'tac.{}.mds.gen.resp-pyr'.format(year))
+    if ref_metric == 'true_ref':
+        file_name = os.path.join(folder_name, 'tac.{}.trueRef.mds.gen.resp-pyr'.format(year))
+    else:
+        file_name = os.path.join(folder_name, 'tac.{}.psdRef.mds.gen.resp-pyr'.format(year))
     json.dump(moverscore_dataset, open(file_name, 'w'))
 
 
@@ -121,4 +124,4 @@ if __name__ == '__main__':
     sent_transformer_type = opt.sent_transformer_type
     device = opt.device
     moverscore_style_pseudo_ref_gen(year=year, ref_metric=ref_metric, eval_level=eval_level,
-                                    sent_transformer_type=sent_transformer_type, device=device)
+                                    sent_transformer_type=sent_transformer_type, ref_summ=ref_summ, device=device)
