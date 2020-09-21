@@ -47,3 +47,26 @@ def pseudo_ref_wmd_metrics_args(parser):
               help="The type of word-mover-distance score")
     group.add('--wmd_weight_type', '-wmd_weight_type', type=str, default='none', choices=['idf', 'none'],
               help="The type of word-mover-distance weight")
+
+
+def pseudo_ref_file_generator_args(parser):
+    '''
+    add some options for building the reference file
+    '''
+    group = parser.add_argument_group("pseudo_ref_file_generator_args")
+    group.add('--year', '-year', type=str, default='2010',
+              choices=['08', '09', '2010', '2011'],
+              help="The year of the TAC data")
+    group.add('--ref_metric', '-ref_metric', type=str, default='top12_1',
+              help="TopN_th: Top 'N' sentences are selected as the reference and 'th' is the threshold.")
+    group.add('--ref_summ', '-ref_summ', action='store_true',
+              help="Ignore the ref_metric and use the gold references")
+    group.add('--sent_transformer_type', '-sent_transformer_type', type=str, default='bert_large_nli_mean_tokens',
+              choices=['bert_large_nli_mean_tokens', 'bert_large_nli_stsb_mean_tokens',
+                       'roberta_large_nli_stsb_mean_tokens'],
+              help="The pretrained sentence transformer used to encoding the sentences of the documents.")
+    group.add('--evaluation_level', '-evaluation_level', type=str, default='summary',
+              choices=['summary', 'micro', 'system', 'macro'],
+              help="The level to evaluate the summarization systems")
+    group.add('--device', '-device', type=str, default='cpu', choices=["cpu", "cuda"],
+              help="The selected device to run the code")
