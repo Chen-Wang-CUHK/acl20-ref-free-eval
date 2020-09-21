@@ -5,7 +5,7 @@ from tqdm import tqdm
 import numpy as np
 import random
 
-from pseudo_ref_builder import *
+from ref_free_metrics.pseudo_ref_builder import *
 from resources import BASE_DIR
 from utils import parse_refs, parse_docs, get_sim_metric
 from summariser.utils.misc import normaliseList
