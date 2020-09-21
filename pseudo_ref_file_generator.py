@@ -124,4 +124,4 @@ if __name__ == '__main__':
     sent_transformer_type = opt.sent_transformer_type
     device = opt.device
     moverscore_style_pseudo_ref_gen(year=year, ref_metric=ref_metric, eval_level=eval_level,
-                                    sent_transformer_type=sent_transformer_type, ref_summ=ref_summ, device=device)
+                                    sent_transformer_type=sent_transformer_type,  device=device)
