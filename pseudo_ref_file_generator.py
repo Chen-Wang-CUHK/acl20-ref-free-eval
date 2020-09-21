@@ -99,7 +99,9 @@ def moverscore_style_pseudo_ref_gen(year, ref_metric, eval_level='summary',
         # add the data instance
         moverscore_dataset[topic_name] = {'references': references, 'annotations': annotations}
     # save the built moverscore style dataset file
-    file_name = os.path.join('data', 'moverscore_style_files', 'tac.{}.mds.gen.resp-pyr'.format(year))
+    folder_name = os.path.join('data', 'moverscore_style_files')
+    os.makedirs(folder_name, exist_ok=True)
+    file_name = os.path.join(folder_name, 'tac.{}.mds.gen.resp-pyr'.format(year))
     json.dump(moverscore_dataset, open(file_name, 'w'))
 
 
