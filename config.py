@@ -58,7 +58,7 @@ def pseudo_ref_file_generator_args(parser):
               choices=['08', '09', '2010', '2011'],
               help="The year of the TAC data")
     group.add('--ref_metric', '-ref_metric', type=str, default='top12_1',
-              help="TopN_th: Top 'N' sentences are selected as the reference and 'th' is the threshold.")
+              help="TopN_th: Top 'N' sentences are selected as the reference and 'th' is the threshold. 'true_ref': use the gold summaries as the references")
     group.add('--ref_summ', '-ref_summ', action='store_true',
               help="Ignore the ref_metric and use the gold references")
     group.add('--sent_transformer_type', '-sent_transformer_type', type=str, default='bert_large_nli_mean_tokens',
