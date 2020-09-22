@@ -80,9 +80,10 @@ def moverscore_style_pseudo_ref_gen(year, ref_metric, eval_level='summary',
         topic_id = topic.replace('.', '-')
         annotations = []
         current_system_summs = peer_summaries[topic]
-        for sys_idx, sys_tuple in enumerate(current_system_summs):
+        for sys_tuple in current_system_summs:
             one_annot = {'topic_id': topic_id}
-            summ_id = sys_idx + 1
+            file_name = sys_tuple[0]
+            summ_id = file_name.split('.')[-1]
             one_annot['summ_id'] = summ_id
             # 'responsiveness'
             sys_respns = human_respns['topic{}_sum{}'.format(topic_id, summ_id)]
@@ -95,6 +96,7 @@ def moverscore_style_pseudo_ref_gen(year, ref_metric, eval_level='summary',
             one_annot['text'] = sys_text
 
             annotations.append(one_annot)
+        annotations = sorted(annotations, key=lambda i: float(i['summ_id']))
 
         # add the data instance
         moverscore_dataset[topic_name] = {'references': references, 'annotations': annotations}
