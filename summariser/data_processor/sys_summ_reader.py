@@ -1,8 +1,8 @@
 import os
-import re
 from collections import OrderedDict
 
 from resources import BASE_DIR
+from utils import replace_xml_special_tokens
 
 class PeerSummaryReader:
     def __init__(self,base_path):
@@ -47,13 +47,7 @@ class PeerSummaryReader:
                 assert line.startswith('<line>') and line.endswith('</line>')
                 line = line[len('<line>'):-len('</line>')]
                 if line.strip() != '':
-                    line = line.strip().replace('&lt;', '<').replace('&gt;', '>').replace('&apos;', "'")
-                    line = line.replace('&amp;amp;', '&').replace('&amp;', '&').replace('&amp ;', '&')
-                    line = line.replace('&quot;', '"').replace('&slash;', '/')
-
-                    special_tokens = re.search("&[a-z]*?;", line)
-                    assert special_tokens == None, "\nFile path: {}\nThis line contains special tokens {}:\n{}".format(
-                        mpath, special_tokens, line)
+                    line = replace_xml_special_tokens(mpath, line)
                     sents.append(line)
             if line == '<annotation>':
                 annot_start = True

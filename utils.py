@@ -1,4 +1,5 @@
 import os
+import re
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.tokenize import sent_tokenize
@@ -120,3 +121,11 @@ def parse_refs(refs,model):
         all_vecs = model.encode(all_sents)
     return sent_index, all_vecs
 
+
+def replace_xml_special_tokens(fpath, line):
+    line = line.strip().replace('&lt;', '<').replace('&gt;', '>').replace('&apos;', "'")
+    line = line.replace('&amp;amp;', '&').replace('&amp;', '&').replace('&amp ;', '&')
+    line = line.replace('&quot;', '"').replace('&slash;', '/')
+    special_tokens = re.search("&[a-z]*?;", line)
+    assert special_tokens == None, "\nFile path: {}\nThis line contains special tokens {}:\n{}".format(
+        fpath, special_tokens, line)

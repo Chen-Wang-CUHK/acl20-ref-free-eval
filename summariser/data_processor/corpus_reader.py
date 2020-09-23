@@ -1,9 +1,10 @@
 import os
-import re
 from collections import OrderedDict
 from nltk.tokenize import sent_tokenize
 
 from resources import BASE_DIR
+from utils import replace_xml_special_tokens
+
 
 class CorpusReader:
     def __init__(self,base_path):
@@ -50,14 +51,8 @@ class CorpusReader:
         sents = []
         for line in ff.readlines():
             if line.strip() != '':
+                line = replace_xml_special_tokens(mpath, line)
                 sents.append(line.strip())
-
-                line = line.strip().replace('&lt;', '<').replace('&gt;', '>').replace('&apos;', "'")
-                line = line.replace('&amp;amp;', '&').replace('&amp;', '&').replace('&amp ;', '&')
-                line = line.replace('&quot;', '"').replace('&slash;', '/')
-                special_tokens = re.search("&[a-z]*?;", line)
-                assert special_tokens == None, "\nFile path: {}\nThis line contains special tokens {}:\n{}".format(
-                    mpath, special_tokens, line)
         ff.close()
         return sents
 
@@ -92,13 +87,8 @@ class CorpusReader:
             elif '</TEXT>' in line:
                 break
             elif flag and line.strip().lower() != '<p>' and line.strip().lower() != '</p>':
+                line = replace_xml_special_tokens(dpath, line)
                 text.append(line.strip())
-
-                line = line.strip().replace('&lt;', '<').replace('&gt;', '>').replace('&apos;', "'")
-                line = line.replace('&amp;amp;', '&').replace('&amp;', '&').replace('&amp ;', '&')
-                line = line.replace('&quot;', '"').replace('&slash;', '/')
-                special_tokens = re.search("&[a-z]*?;", line)
-                assert special_tokens == None, "\nFile path: {}\nThis line contains special tokens {}:\n{}".format(dpath, special_tokens, line)
 
         ff.close()
 
