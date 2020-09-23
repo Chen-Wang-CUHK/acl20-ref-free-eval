@@ -52,7 +52,8 @@ class PeerSummaryReader:
                     line = line.replace('&quot;', '"').replace('&slash;', '/')
 
                     special_tokens = re.search("&[a-z]*?;", line)
-                    assert special_tokens == None, "This line contains special tokens {}:\n{}".format(special_tokens, line)
+                    assert special_tokens == None, "\nFile path: {}\nThis line contains special tokens {}:\n{}".format(
+                        mpath, special_tokens, line)
                     sents.append(line)
             if line == '<annotation>':
                 annot_start = True

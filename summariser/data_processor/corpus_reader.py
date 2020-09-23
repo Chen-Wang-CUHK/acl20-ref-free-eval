@@ -52,7 +52,8 @@ class CorpusReader:
             if line.strip() != '':
                 sents.append(line.strip())
                 special_tokens = re.search("&[a-z]*?;", line)
-                assert special_tokens == None, "This line contains special tokens {}:\n{}".format(special_tokens, line)
+                assert special_tokens == None, "\nFile path: {}\nThis line contains special tokens {}:\n{}".format(
+                    mpath, special_tokens, line)
         ff.close()
         return sents
 
@@ -89,7 +90,7 @@ class CorpusReader:
             elif flag and line.strip().lower() != '<p>' and line.strip().lower() != '</p>':
                 text.append(line.strip())
                 special_tokens = re.search("&[a-z]*?;", line)
-                assert special_tokens == None, "This line contains special tokens {}:\n{}".format(special_tokens, line)
+                assert special_tokens == None, "\nFile path: {}\nThis line contains special tokens {}:\n{}".format(dpath, special_tokens, line)
 
         ff.close()
 
