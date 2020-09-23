@@ -1,4 +1,5 @@
 import os
+import re
 from collections import OrderedDict
 from nltk.tokenize import sent_tokenize
 
@@ -50,6 +51,8 @@ class CorpusReader:
         for line in ff.readlines():
             if line.strip() != '':
                 sents.append(line.strip())
+                special_tokens = re.search("&[a-z]*?;", line)
+                assert special_tokens == None, "This line contains special tokens {}:\n{}".format(special_tokens, line)
         ff.close()
         return sents
 
@@ -85,6 +88,8 @@ class CorpusReader:
                 break
             elif flag and line.strip().lower() != '<p>' and line.strip().lower() != '</p>':
                 text.append(line.strip())
+                special_tokens = re.search("&[a-z]*?;", line)
+                assert special_tokens == None, "This line contains special tokens {}:\n{}".format(special_tokens, line)
 
         ff.close()
 

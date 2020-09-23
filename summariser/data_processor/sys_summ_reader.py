@@ -1,4 +1,5 @@
 import os
+import re
 from collections import OrderedDict
 
 from resources import BASE_DIR
@@ -38,6 +39,7 @@ class PeerSummaryReader:
         annot_start = False
         peer_start = False
         for line in ff.readlines():
+            orig_line = line
             line = line.strip()
             if annot_start and line == '</text>':
                 break
@@ -45,7 +47,13 @@ class PeerSummaryReader:
                 assert line.startswith('<line>') and line.endswith('</line>')
                 line = line[len('<line>'):-len('</line>')]
                 if line.strip() != '':
-                    sents.append(line.strip().replace('&quot;', '"'))
+                    line = line.strip().replace('&lt;', '<').replace('&gt;', '>').replace('&apos;', "'")
+                    line = line.replace('&amp;amp;', '&').replace('&amp;', '&').replace('&amp ;', '&')
+                    line = line.replace('&quot;', '"').replace('&slash;', '/')
+
+                    special_tokens = re.search("&[a-z]*?;", line)
+                    assert special_tokens == None, "This line contains special tokens {}:\n{}".format(special_tokens, line)
+                    sents.append(line)
             if line == '<annotation>':
                 annot_start = True
             if annot_start and line == '<text>':
