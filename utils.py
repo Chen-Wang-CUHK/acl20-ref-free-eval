@@ -129,3 +129,4 @@ def replace_xml_special_tokens(fpath, line):
     special_tokens = re.search("&[a-z]*?;", line)
     assert special_tokens == None, "\nFile path: {}\nThis line contains special tokens {}:\n{}".format(
         fpath, special_tokens, line)
+    return line
