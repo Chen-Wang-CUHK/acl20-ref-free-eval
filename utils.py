@@ -105,9 +105,9 @@ def parse_refs(refs,model):
     sent_index = {}
     cnt = 0
     for i,rr in enumerate(refs):
-        if len(rr[1]) == 1: # TAC09, one piece of text
+        if len(rr[1]) == 1: # one piece of text
             ref_sents = sent_tokenize(rr[1][0])
-        else: # TAC08, a list of sentences
+        else: # a list of sentences
             ref_sents = rr[1]
         ref_name = 'ref{}'.format(i)
         for j, sent in enumerate(ref_sents):

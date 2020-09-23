@@ -11,10 +11,10 @@ class PeerSummaryReader:
         # changed by wchen
         assert '08' == year or '09' == year or '2010' == year or '2011' == year
         if year in ['08', '09']:
-            data_path = os.path.join(self.base_path,'data','human_evaluations','UpdateSumm{}_eval'.format(year), 'ROUGE','peers')
+            data_path = os.path.join(self.base_path,'data','human_evaluations','UpdateSumm{}_eval'.format(year), 'manual','peers')
         else:
             # year in [2010, 2011]
-            data_path = os.path.join(self.base_path, 'data', 'human_evaluations', 'GuidedSumm{}_eval'.format(year), 'ROUGE', 'peers')
+            data_path = os.path.join(self.base_path, 'data', 'human_evaluations', 'GuidedSumm{}_eval'.format(year), 'manual', 'peers')
         summ_dic = self.readPeerSummary(data_path)
 
         return summ_dic
@@ -34,9 +34,23 @@ class PeerSummaryReader:
     def readOnePeer(self,mpath):
         ff = open(mpath,'r',encoding='latin-1')
         sents = []
+        # changed by wchen for reading from 'manual' folder
+        annot_start = False
+        peer_start = False
         for line in ff.readlines():
-            if line.strip() != '':
-                sents.append(line.strip())
+            line = line.strip()
+            if annot_start and line == '</text>':
+                break
+            if peer_start:
+                assert line.startswith('<line>') and line.endswith('</line>')
+                line = line[len('<line>'):-len('</line>')]
+                if line.strip() != '':
+                    sents.append(line.strip().replace('&quot;', '"'))
+            if line == '<annotation>':
+                annot_start = True
+            if annot_start and line == '<text>':
+                peer_start = True
+
         ff.close()
         return sents
 

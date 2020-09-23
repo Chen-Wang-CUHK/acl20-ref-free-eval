@@ -70,3 +70,5 @@ def pseudo_ref_file_generator_args(parser):
               help="The level to evaluate the summarization systems")
     group.add('--device', '-device', type=str, default='cpu', choices=["cpu", "cuda"],
               help="The selected device to run the code")
+    group.add('--add_gold_refs_to_sys_summs', '-add_gold_refs_to_sys_summs', action='store_true',
+              help='Add the gold refs as part of the system summaries')

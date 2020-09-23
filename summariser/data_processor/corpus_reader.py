@@ -13,11 +13,11 @@ class CorpusReader:
         assert '08' == year or '09' == year or '2010' == year or '2011' == year
         if year in ['08', '09']:
             data_path = os.path.join(self.base_path,'data','input_docs','UpdateSumm{}_test_docs_files'.format(year))
-            model_path = os.path.join(self.base_path,'data','human_evaluations','UpdateSumm{}_eval'.format(year),'ROUGE','models')
+            model_path = os.path.join(self.base_path,'data','human_evaluations','UpdateSumm{}_eval'.format(year),'manual','models')
         else:
             # year in [2010, 2011]
             data_path = os.path.join(self.base_path, 'data', 'input_docs', 'GuidedSumm{}_test_docs_files'.format(year))
-            model_path = os.path.join(self.base_path, 'data', 'human_evaluations', 'GuidedSumm{}_eval'.format(year), 'ROUGE', 'models')
+            model_path = os.path.join(self.base_path, 'data', 'human_evaluations', 'GuidedSumm{}_eval'.format(year), 'manual', 'models')
         corpus = []
 
         docs_dic = self.readDocs(data_path)
