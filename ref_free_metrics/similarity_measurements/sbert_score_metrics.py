@@ -156,9 +156,9 @@ def run_sbert_score_metrics(year, ref_metric, wmd_score_type, wmd_weight_type,
         ref_sents = []
         if len(ref_dic) >= 15: #all(['ref' in rs for rs in ref_sources]):
             for rs in ref_sources:
-                ref_sents.append([ref_dic[k]['text'] for k in ref_dic if ref_dic[k]['doc']==rs])
+                ref_sents.append([ref_dic[k]['text'] for k in sorted(ref_dic.keys()) if ref_dic[k]['doc']==rs])
         else:
-            ref_sents.append([ref_dic[k]['text'] for k in ref_dic])
+            ref_sents.append([ref_dic[k]['text'] for k in sorted(ref_dic.keys())])
         ref_vecs = []
         ref_tokens = []
         for rsents in ref_sents:

@@ -115,10 +115,10 @@ def run_bert_vec_metrics(year, ref_metric, bert_type, eval_level='summary', huma
         ref_sources = set(ref_dic[k]['doc'] for k in ref_dic)
         if len(ref_dic) >= 15:
             for rs in ref_sources:
-                ref_sents = [ref_dic[k]['text'] for k in ref_dic if ref_dic[k]['doc']==rs]
+                ref_sents = [ref_dic[k]['text'] for k in sorted(ref_dic.keys()) if ref_dic[k]['doc']==rs]
                 all_sents.append(ref_sents)
         else:
-            ref_sents = [ref_dic[k]['text'] for k in ref_dic]
+            ref_sents = [ref_dic[k]['text'] for k in sorted(ref_dic.keys())]
             all_sents.append(ref_sents)
             ref_sources = [1]
         for ss in peer_summaries[topic]:
