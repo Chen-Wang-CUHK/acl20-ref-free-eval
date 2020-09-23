@@ -106,7 +106,7 @@ def moverscore_style_pseudo_ref_gen(year, ref_metric, eval_level='summary',
     if ref_metric == 'true_ref':
         file_name = os.path.join(folder_name, 'tac.{}.trueRef.mds.gen.resp-pyr'.format(year))
     else:
-        file_name = os.path.join(folder_name, 'tac.{}.psdRef.mds.gen.resp-pyr'.format(year))
+        file_name = os.path.join(folder_name, 'tac.{}.psdRef.{}.mds.gen.resp-pyr'.format(year, ref_metric))
     json.dump(moverscore_dataset, open(file_name, 'w'))
 
 
