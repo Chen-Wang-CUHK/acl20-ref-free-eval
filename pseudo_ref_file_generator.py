@@ -7,6 +7,7 @@ from nltk.stem import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 from nltk.corpus import stopwords
+from nltk.tokenize import sent_tokenize
 
 from resources import BASE_DIR, LANGUAGE
 from summariser.data_processor.corpus_reader import CorpusReader
@@ -21,7 +22,9 @@ import config
 import json
 
 def moverscore_style_pseudo_ref_gen(year, ref_metric, eval_level='summary',
-                                    sent_transformer_type='bert_large_nli_stsb_mean_tokens', device='cpu'):
+                                    sent_transformer_type='bert_large_nli_stsb_mean_tokens',
+                                    add_gold_refs_to_sys_summs=False,
+                                    device='cpu'):
     '''
     the format of moverscore style input dataset file
 
@@ -98,15 +101,37 @@ def moverscore_style_pseudo_ref_gen(year, ref_metric, eval_level='summary',
             annotations.append(one_annot)
         annotations = sorted(annotations, key=lambda i: float(i['summ_id']))
 
+        if add_gold_refs_to_sys_summs:
+            gold_refs_annots = []
+            for true_ref_tuple in models:
+                one_annot = {'topic_id': topic_id}
+                summ_id = true_ref_tuple[0].split('.')[-1]
+                one_annot['summ_id'] = summ_id
+                # 'responsiveness'
+                true_ref_respns = human_respns['topic{}_blockmodel_sum{}'.format(topic_id, summ_id)]
+                one_annot['responsiveness'] = true_ref_respns
+                # 'pyr_score'
+                true_ref_pyramid = human_pyramid['topic{}_blockmodel_sum{}'.format(topic_id, summ_id)]
+                one_annot['pyr_score'] = true_ref_pyramid
+                # 'text'
+                true_ref_text = sent_tokenize(' '.join(true_ref_tuple[1]))
+                one_annot['text'] = true_ref_text
+
+                gold_refs_annots.append(one_annot)
+            gold_refs_annots = sorted(gold_refs_annots, key=lambda i: i['summ_id'])
+            annotations = annotations + gold_refs_annots
+
         # add the data instance
         moverscore_dataset[topic_name] = {'references': references, 'annotations': annotations}
     # save the built moverscore style dataset file
     folder_name = os.path.join('data', 'moverscore_style_files')
     os.makedirs(folder_name, exist_ok=True)
+    # whether contain true reference annotations in the system annotations needed to evaluate
+    with_true_refs = 'withTrueRefsInSys.' if add_gold_refs_to_sys_summs else ''
     if ref_metric == 'true_ref':
-        file_name = os.path.join(folder_name, 'tac.{}.trueRef.mds.gen.resp-pyr'.format(year))
+        file_name = os.path.join(folder_name, 'tac.{}.trueRef.{}mds.gen.resp-pyr'.format(year, with_true_refs))
     else:
-        file_name = os.path.join(folder_name, 'tac.{}.psdRef.{}.mds.gen.resp-pyr'.format(year, ref_metric))
+        file_name = os.path.join(folder_name, 'tac.{}.psdRef.{}.{}mds.gen.resp-pyr'.format(year, ref_metric, with_true_refs))
     json.dump(moverscore_dataset, open(file_name, 'w'))
 
 
@@ -124,6 +149,9 @@ if __name__ == '__main__':
     ref_metric = opt.ref_metric
     eval_level = opt.evaluation_level
     sent_transformer_type = opt.sent_transformer_type
+    add_gold_refs_to_sys_summs = opt.add_gold_refs_to_sys_summs
     device = opt.device
     moverscore_style_pseudo_ref_gen(year=year, ref_metric=ref_metric, eval_level=eval_level,
-                                    sent_transformer_type=sent_transformer_type,  device=device)
+                                    sent_transformer_type=sent_transformer_type,
+                                    add_gold_refs_to_sys_summs=add_gold_refs_to_sys_summs,
+                                    device=device)

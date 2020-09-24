@@ -195,9 +195,9 @@ class TacData:
                 idx_list = [2,5,6,7]
             key = 'topic{}_'.format(eles[0])
             if block is None:
-                key += 'sum{}'.format(eles[0])
+                key += 'sum{}'.format(eles[1]) # changed by wchen 0->1
             else:
-                key += 'block{}_sum{}'.format(block,eles[0])
+                key += 'block{}_sum{}'.format(block,eles[1]) # changed by wchen 0->1
             new_entry = OrderedDict()
             for i,j in enumerate(idx_list):
                 new_entry[metrics[i]] = float(eles[j])
