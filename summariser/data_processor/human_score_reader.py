@@ -102,6 +102,7 @@ class TacData:
         fnames = os.listdir(manual_base)
         for name in fnames:
             if '.avg' in name: continue
+            if 'manual' not in name: continue # exclude non-manural scores
             if name[0] == '.': continue # exclude hidden files
             if '.' not in name: continue # eclude directories
             if 'model' in name:

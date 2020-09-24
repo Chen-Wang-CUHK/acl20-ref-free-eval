@@ -51,7 +51,7 @@ class PeerSummaryReader:
                     sents.append(line)
             if line == '<annotation>':
                 annot_start = True
-            if annot_start and line == '<text>':
+            if annot_start and (line == '<text>' or '<text length=' in line):
                 peer_start = True
 
         ff.close()
