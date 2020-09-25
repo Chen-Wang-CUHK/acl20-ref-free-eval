@@ -109,12 +109,12 @@ class TacData:
                 if 'A' in name or 'B' in name:
                     self._readManualScores(scores, os.path.join(manual_base, name), name.split('.')[-2])
                 else:
-                    self._readManualScores(scores, os.path.join(manual_base, name))
+                    self._readManualScores(scores, os.path.join(manual_base, name), name.split('.')[-1])
             elif 'peer' in name:
                 if 'A' in name or 'B' in name:
                     self._readPeerScores(scores, os.path.join(manual_base, name), name.split('.')[-2])
                 else:
-                    self._readPeerScores(scores, os.path.join(manual_base, name))
+                    self._readPeerScores(scores, os.path.join(manual_base, name), name.split('.')[-1])
         return scores
 
 
@@ -143,7 +143,7 @@ class TacData:
         for line in ff.readlines():
             if line.strip() == '':
                 continue
-            if block is None:
+            if '\t' not in line.strip():
                 eles = line.split(' ')
                 idx_list = [2,3,4,6,7,8]
             else:
@@ -188,7 +188,7 @@ class TacData:
         for line in ff.readlines():
             if line.strip() == '':
                 continue
-            if block is None:
+            if '\t' not in line.strip():
                 eles = line.split(' ')
                 idx_list = [2,4,5,6]
             else:

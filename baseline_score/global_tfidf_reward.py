@@ -92,7 +92,7 @@ if __name__ == '__main__':
     print('=====ref summ: {}====='.format(ref_summ))
 
     tacData = TacData(BASE_DIR,year)
-    human = tacData.getHumanScores('summary', human_metric) # responsiveness or pyramid
+    human = tacData.getHumanScores(eval_level, human_metric) # responsiveness or pyramid
     tfidf_scores = get_tfidf_scores(year,ref_summ)
     all_results = {}
     for topic in tfidf_scores:
