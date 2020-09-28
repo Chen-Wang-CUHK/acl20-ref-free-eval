@@ -1,8 +1,9 @@
 import os
 from collections import OrderedDict
+from nltk.tokenize import sent_tokenize
 
 from resources import BASE_DIR
-from utils import replace_xml_special_tokens
+from utils import replace_xml_special_tokens_and_preprocess
 
 class PeerSummaryReader:
     def __init__(self,base_path):
@@ -47,15 +48,17 @@ class PeerSummaryReader:
                 assert line.startswith('<line>') and line.endswith('</line>')
                 line = line[len('<line>'):-len('</line>')]
                 if line.strip() != '':
-                    line = replace_xml_special_tokens(mpath, line)
-                    sents.append(line)
+                    line = replace_xml_special_tokens_and_preprocess(mpath, line)
+                    if line.strip() != '':
+                        sents.append(line)
             if line == '<annotation>':
                 annot_start = True
             if annot_start and (line == '<text>' or '<text length=' in line):
                 peer_start = True
 
         ff.close()
-        return sents
+        # changed by wchen sents --> sent_tokenize(' '.join(sents))
+        return sent_tokenize(' '.join(sents))
 
     def uniTopicName(self,name):
         doc_name = name.split('-')[0][:5]

@@ -122,11 +122,32 @@ def parse_refs(refs,model):
     return sent_index, all_vecs
 
 
-def replace_xml_special_tokens(fpath, line):
+def replace_xml_special_tokens_and_preprocess(fpath, line):
     line = line.strip().replace('&lt;', '<').replace('&gt;', '>').replace('&apos;', "'")
     line = line.replace('&amp;amp;', '&').replace('&amp;', '&').replace('&amp ;', '&')
     line = line.replace('&quot;', '"').replace('&slash;', '/')
     special_tokens = re.search("&[a-z]*?;", line)
     assert special_tokens == None, "\nFile path: {}\nThis line contains special tokens {}:\n{}".format(
         fpath, special_tokens, line)
+    line = preprocess_one_line(line)
     return line
+
+
+def preprocess_one_line(line):
+    line = line.strip()
+    orig_words = line.split()
+    new_words = []
+    for w in orig_words:
+        # 1. remove "___"
+        if len(w) >= 2 and all([c == '_' for c in w]):
+            continue
+        # 2. "insurgent.Four" --> " insurgent. Four"
+        posis = [p.start() for p in re.finditer("\.",w)]
+        if len(posis) == 1 and w[-1] != '.' and w[posis[0]+1].isupper() and len(w) > 3:
+            w = w.replace('.', '. ')
+        new_words.append(w)
+    new_line = ' '.join(new_words)
+    return new_line
+
+
+

@@ -3,7 +3,7 @@ from collections import OrderedDict
 from nltk.tokenize import sent_tokenize
 
 from resources import BASE_DIR
-from utils import replace_xml_special_tokens
+from utils import replace_xml_special_tokens_and_preprocess
 
 
 class CorpusReader:
@@ -51,10 +51,12 @@ class CorpusReader:
         sents = []
         for line in ff.readlines():
             if line.strip() != '':
-                line = replace_xml_special_tokens(mpath, line)
-                sents.append(line.strip())
+                line = replace_xml_special_tokens_and_preprocess(mpath, line)
+                if line.strip() != '':
+                    sents.append(line.strip())
         ff.close()
-        return sents
+        # changed by wchen sents --> sent_tokenize(' '.join(sents))
+        return sent_tokenize(' '.join(sents))
 
     def uniTopicName(self,name):
         doc_name = name.split('-')[0][:5]
@@ -87,8 +89,9 @@ class CorpusReader:
             elif '</TEXT>' in line:
                 break
             elif flag and line.strip().lower() != '<p>' and line.strip().lower() != '</p>':
-                line = replace_xml_special_tokens(dpath, line)
-                text.append(line.strip())
+                line = replace_xml_special_tokens_and_preprocess(dpath, line)
+                if line.strip() != '':
+                    text.append(line.strip())
 
         ff.close()
 
